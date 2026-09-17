@@ -1,15 +1,19 @@
-<title>Loan Portfolio Command Center</title>
+<title>Portfolio Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,450;6..72,560;6..72,650&family=JetBrains+Mono:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
   :root{
-    --surface-1:      #fcfcfb;
-    --page:           #f9f9f7;
-    --panel:          #ffffff;
-    --ink-1:          #0b0b0b;
-    --ink-2:          #52514e;
-    --ink-muted:      #898781;
-    --grid:           #e1e0d9;
-    --baseline:       #c3c2b7;
-    --border:         rgba(11,11,11,0.10);
+    --page:      #f3f4f9;
+    --panel:     #ffffff;
+    --panel-2:   #eceefb;
+    --ink-1:     #11131f;
+    --ink-2:     #494c63;
+    --ink-muted: #82869e;
+    --grid:      #e3e5f0;
+    --baseline:  #c8cbe0;
+    --border:    rgba(17,19,31,0.09);
+    --shadow:    0 1px 2px rgba(17,19,31,.05), 0 10px 26px -14px rgba(17,19,31,.16);
 
     --cat-1: #2a78d6; --cat-2: #eb6834; --cat-3: #1baf7a;
     --cat-4: #eda100; --cat-5: #e87ba4; --cat-6: #008300;
@@ -22,114 +26,150 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --surface-1:#1a1a19; --page:#0d0d0d; --panel:#212120;
-      --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
-      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --page:#0a0c14; --panel:#12141f; --panel-2:#171a2b;
+      --ink-1:#f1f2f8; --ink-2:#c3c6dc; --ink-muted:#888ca8;
+      --grid:#232636; --baseline:#33374c; --border:rgba(255,255,255,0.09);
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 30px -16px rgba(0,0,0,.7);
       --cat-1:#3987e5; --cat-2:#d95926; --cat-3:#199e70;
       --cat-4:#c98500; --cat-5:#d55181; --cat-6:#008300;
+      --default-c:#a33a3a;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"]{
-    --surface-1:#1a1a19; --page:#0d0d0d; --panel:#212120;
-    --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
-    --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+    --page:#0a0c14; --panel:#12141f; --panel-2:#171a2b;
+    --ink-1:#f1f2f8; --ink-2:#c3c6dc; --ink-muted:#888ca8;
+    --grid:#232636; --baseline:#33374c; --border:rgba(255,255,255,0.09);
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 30px -16px rgba(0,0,0,.7);
     --cat-1:#3987e5; --cat-2:#d95926; --cat-3:#199e70;
     --cat-4:#c98500; --cat-5:#d55181; --cat-6:#008300;
+    --default-c:#a33a3a;
     color-scheme: dark;
   }
 
   *{box-sizing:border-box;}
   body{
     background:var(--page); color:var(--ink-1);
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    padding-inline:20px; padding-block:26px 60px;
+    font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding-inline:20px; padding-block:32px 64px;
   }
   .wrap{max-width:1180px; margin:0 auto;}
+  .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric:tabular-nums;}
 
-  header.top{margin-bottom:20px;}
+  /* ---- masthead --------------------------------------------------------- */
+  header.top{padding-bottom:18px; margin-bottom:22px; border-bottom:1px solid var(--border);}
   header.top .eyebrow{
-    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.09em; text-transform:uppercase;
     color:var(--ink-muted); font-weight:600;
   }
-  header.top h1{font-size:clamp(22px,3.4vw,28px); margin:4px 0 6px; letter-spacing:-0.01em;}
-  header.top p{font-size:14px; color:var(--ink-2); margin:0; max-width:70ch;}
-
-  .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0;}
-  @media (max-width:760px){ .tiles{grid-template-columns:repeat(2,1fr);} }
-  .tile{
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:14px 16px;
+  header.top h1{
+    font-family:"Newsreader", Georgia, serif; font-weight:560; font-style:normal;
+    font-size:clamp(28px,4vw,38px); margin:6px 0 10px; letter-spacing:-0.01em;
+    text-wrap:balance;
   }
-  .tile .l{font-size:12px; color:var(--ink-2);}
-  .tile .v{font-size:26px; font-weight:650; margin-top:4px; font-variant-numeric:tabular-nums;}
-  .tile .s{font-size:11.5px; color:var(--ink-muted); margin-top:3px;}
+  header.top p{font-size:14.5px; line-height:1.6; color:var(--ink-2); margin:0 0 14px; max-width:66ch;}
+  .meta-strip{display:flex; flex-wrap:wrap; gap:0; font-size:12px; color:var(--ink-muted);}
+  .meta-strip span{padding-right:14px; margin-right:14px; border-right:1px solid var(--border);}
+  .meta-strip span:last-child{border-right:none; padding-right:0; margin-right:0;}
+  .meta-strip b{color:var(--ink-2); font-weight:600;}
 
+  /* ---- KPI row ----------------------------------------------------------- */
+  .kpi-row{display:grid; grid-template-columns:1.3fr 1.3fr 1fr 1fr; gap:12px; margin-bottom:22px;}
+  @media (max-width:820px){ .kpi-row{grid-template-columns:1fr 1fr;} }
+  .kpi{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:16px 18px; box-shadow:var(--shadow);
+  }
+  .kpi.hero{background:var(--panel-2);}
+  .kpi .l{font-size:12px; color:var(--ink-2); font-weight:600;}
+  .kpi .v{font-family:"JetBrains Mono"; font-weight:600; margin-top:6px; letter-spacing:-0.01em;}
+  .kpi.hero .v{font-size:clamp(30px,3.6vw,40px);}
+  .kpi:not(.hero) .v{font-size:23px;}
+  .kpi .s{font-size:11.5px; color:var(--ink-muted); margin-top:5px;}
+  .kpi .delta{
+    display:inline-block; margin-top:8px; font-size:11px; font-weight:600;
+    font-family:"JetBrains Mono"; color:var(--serious); background:color-mix(in oklab, var(--serious) 14%, transparent);
+    padding:2px 7px; border-radius:5px;
+  }
+
+  /* ---- panels -------------------------------------------------------------- */
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;}
   @media (max-width:820px){ .grid2{grid-template-columns:1fr;} }
-
   .panel{
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:16px 18px; overflow-x:auto;
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; box-shadow:var(--shadow); overflow-x:auto;
   }
-  .panel h2{font-size:14.5px; margin:0 0 2px; font-weight:650;}
-  .panel .sub{font-size:12px; color:var(--ink-muted); margin:0 0 14px;}
+  .panel h2{font-size:14px; margin:0 0 3px; font-weight:650;}
+  .panel .sub{font-size:12px; color:var(--ink-muted); margin:0 0 16px;}
 
-  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:12.5px;}
-  .bar-row .lab{width:64px; flex-shrink:0; color:var(--ink-2); font-variant-numeric:tabular-nums;}
-  .bar-track{flex:1; background:var(--grid); border-radius:4px; height:16px; position:relative;}
+  .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:12.5px;}
+  .bar-row .lab{width:64px; flex-shrink:0; color:var(--ink-2);}
+  .bar-track{flex:1; background:var(--grid); border-radius:4px; height:15px; position:relative;}
   .bar-fill{height:100%; border-radius:4px; position:relative;}
-  .bar-val{width:52px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; color:var(--ink-1); font-weight:600;}
+  .bar-val{width:56px; text-align:right; flex-shrink:0; font-family:"JetBrains Mono"; color:var(--ink-1); font-weight:600; font-size:12px;}
 
-  .stack{display:flex; height:34px; border-radius:6px; overflow:hidden; margin-bottom:10px;}
+  .stack{display:flex; height:36px; border-radius:7px; overflow:hidden; margin-bottom:12px;}
   .stack > div{height:100%;}
-  .legend{display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:var(--ink-2);}
-  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px;}
+  .legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--ink-2);}
+  .legend .sw{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px; vertical-align:1px;}
+  .legend .fig{font-family:"JetBrains Mono"; color:var(--ink-1); font-weight:500;}
 
   table.heat{border-collapse:collapse; font-size:12.5px; width:100%;}
-  table.heat th{font-weight:600; color:var(--ink-muted); font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:5px 8px; text-align:center;}
+  table.heat th{font-weight:600; color:var(--ink-muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; padding:5px 8px; text-align:center;}
   table.heat td{padding:0;}
   table.heat th.rowhead, table.heat td.rowhead{text-align:left; color:var(--ink-2); font-weight:600; padding:5px 10px 5px 0; font-size:12px;}
   .cell{
-    height:44px; display:flex; align-items:center; justify-content:center;
-    font-variant-numeric:tabular-nums; font-weight:600; border-radius:4px; margin:2px;
-    cursor:default;
+    height:42px; display:flex; align-items:center; justify-content:center;
+    font-family:"JetBrains Mono"; font-weight:600; border-radius:6px; margin:2px;
+    cursor:default; font-size:12px;
   }
 
-  svg.linechart{width:100%; height:280px; overflow:visible;}
-  .axis-label{font-size:10.5px; fill:var(--ink-muted);}
+  svg.linechart{width:100%; height:270px; overflow:visible;}
+  .axis-label{font-size:10.5px; fill:var(--ink-muted); font-family:"JetBrains Mono";}
   .gridline{stroke:var(--grid); stroke-width:1;}
   .baseline{stroke:var(--baseline); stroke-width:1;}
-  .vline{stroke:var(--ink-muted); stroke-width:1; stroke-dasharray:2,3; opacity:0;}
 
   #tooltip{
     position:fixed; pointer-events:none; z-index:50;
-    background:var(--ink-1); color:var(--surface-1);
-    font-size:12px; padding:6px 9px; border-radius:6px;
+    background:var(--ink-1); color:var(--page);
+    font-size:12px; padding:6px 9px; border-radius:6px; font-family:"JetBrains Mono";
     transform:translate(-50%,-115%); white-space:nowrap; opacity:0; transition:opacity .08s;
   }
 
+  /* ---- insights ledger ------------------------------------------------------ */
   .insights{
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:18px 20px; margin-top:4px;
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-top:4px; box-shadow:var(--shadow);
   }
-  .insights h2{font-size:15px; margin:0 0 12px;}
-  .insights ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:9px;}
-  .insights li{font-size:13.5px; line-height:1.55; color:var(--ink-1);}
-  .insights li b{font-weight:650;}
-  .insights .caveat{margin-top:14px; padding-top:12px; border-top:1px dashed var(--grid); font-size:12px; color:var(--ink-muted);}
+  .insights h2{font-size:14.5px; margin:0 0 4px; font-weight:650;}
+  .insights > .sub{font-size:12px; color:var(--ink-muted); margin:0 0 14px;}
+  .ledger-item{
+    display:grid; grid-template-columns:30px 1fr; gap:12px;
+    padding:13px 0; border-top:1px solid var(--border);
+  }
+  .ledger-item:first-of-type{border-top:none; padding-top:2px;}
+  .ledger-item .idx{font-family:"JetBrains Mono"; color:var(--ink-muted); font-size:12.5px; padding-top:1px;}
+  .ledger-item p{margin:0; font-size:13.5px; line-height:1.6; color:var(--ink-1);}
+  .ledger-item p b{font-weight:650;}
+  .caveat{margin-top:14px; padding-top:14px; border-top:1px dashed var(--grid); font-size:12px; color:var(--ink-muted); line-height:1.55;}
 
-  footer.note{margin-top:24px; font-size:11.5px; color:var(--ink-muted);}
+  footer.note{margin-top:22px; font-size:11.5px; color:var(--ink-muted); font-family:"JetBrains Mono";}
 </style>
 
 <div class="wrap">
   <header class="top">
-    <span class="eyebrow">Loan Portfolio · Collections &amp; Risk Analytics</span>
+    <span class="eyebrow">Loan Portfolio &middot; Collections &amp; Risk Analytics</span>
     <h1>Portfolio Command Center</h1>
-    <p>On-book loan portfolio as of Sep 2026, built from a simulated monthly repayment history calibrated to real grade-level default patterns. 32,571 originated loans across 13 quarterly vintages.</p>
+    <p>On-book loan portfolio as of September 2026, built from a simulated monthly repayment history calibrated to real grade-level default patterns.</p>
+    <div class="meta-strip">
+      <span>As of <b>Sep 2026</b></span>
+      <span><b>32,571</b> loans originated</span>
+      <span><b>13</b> quarterly vintages</span>
+      <span>Warehouse: <b>DuckDB</b></span>
+    </div>
   </header>
 
-  <div class="tiles" id="tiles"></div>
+  <div class="kpi-row" id="tiles"></div>
 
   <div class="grid2">
     <div class="panel">
@@ -139,7 +179,7 @@
     </div>
     <div class="panel">
       <h2>Current book composition</h2>
-      <p class="sub">26,367 loans on book right now, by delinquency bucket</p>
+      <p class="sub" id="stack-sub">On-book loans by delinquency bucket</p>
       <div id="chart-stack"></div>
       <div class="legend" id="legend-stack"></div>
     </div>
@@ -160,23 +200,19 @@
 
   <div class="panel" style="margin-bottom:14px;">
     <h2>Vintage curves — cumulative default rate by months on book</h2>
-    <p class="sub">Six origination cohorts, compared at equal age (not equal calendar date)</p>
+    <p class="sub">Six origination cohorts, compared at equal age, not equal calendar date</p>
     <div id="chart-vintage"></div>
-    <div class="legend" id="legend-vintage" style="margin-top:8px;"></div>
+    <div class="legend" id="legend-vintage" style="margin-top:10px;"></div>
   </div>
 
   <div class="insights">
     <h2>Insights &amp; recommendations</h2>
-    <ol>
-      <li><b>Tighten the underwriting line between grade C and D.</b> NPA rate roughly doubles from C (24.2%) to D (48.4%) — the steepest jump in the whole grade curve. Either raise the approval bar at that boundary or price D-and-below materially higher; treating C and D as adjacent risk tiers understates the gap.</li>
-      <li><b>Move collections effort earlier, to DPD30, not DPD60–90.</b> The roll-rate matrix shows cure probability collapsing non-linearly: 29.9% of DPD30 accounts self-cure to current, but only 4.7% do once an account reaches DPD90 — and 24.8% of DPD90 accounts roll straight to default the same month. Intervention has far more leverage before that cliff than after it.</li>
-      <li><b>Don't score a recent vintage against a matured one.</b> The newest cohorts look artificially clean only because they haven't aged long enough to default yet — 2026Q2 shows 0.6% cumulative default at month 5 versus ~5–6% for older vintages at the same age. Compare cohorts at equal months-on-book, never at equal calendar date.</li>
-      <li><b>Layer loan purpose into pricing, not just grade.</b> Medical (24.7%) and debt-consolidation (24.4%) loans run meaningfully higher NPA than venture (18.0%) or education (19.3%) loans at the same grade mix — grade alone is leaving risk on the table.</li>
-    </ol>
+    <p class="sub">Ranked by portfolio impact</p>
+    <div id="ledger"></div>
     <p class="caveat">Underlying repayment history is simulated (the source dataset has no time series), calibrated so per-grade default rates and the overall ~22% base rate match the real credit-risk dataset. Read this as a demonstration of the analysis method, not as a live production portfolio.</p>
   </div>
 
-  <footer class="note">Warehouse: DuckDB · 514,015 monthly repayment records across 32,571 loans · built on top of the credit-risk classifier project.</footer>
+  <footer class="note">514,015 monthly repayment records &middot; 32,571 loans &middot; built on the credit-risk classifier project</footer>
 </div>
 
 <div id="tooltip"></div>
@@ -198,26 +234,38 @@ function hideTip(){ tooltip.style.opacity = "0"; }
 function renderTiles(){
   const worst = DATA.by_grade[DATA.by_grade.length-1];
   const best = DATA.by_grade[0];
-  const tiles = [
-    {l:"On-book loans", v: DATA.on_book.toLocaleString(), s: `of ${DATA.total_loans.toLocaleString()} ever originated`},
-    {l:"NPA rate (count)", v: fmtPct(DATA.npa_count_pct), s: "90+ DPD or default, on-book"},
-    {l:"NPA rate (balance)", v: fmtPct(DATA.npa_balance_pct), s: "balance-weighted — larger loans skew worse"},
-    {l:"Grade spread", v: `${fmtPct(best.npa_pct,0)} → ${fmtPct(worst.npa_pct,0)}`, s: `grade ${best.loan_grade} to grade ${worst.loan_grade} NPA rate`},
-  ];
-  document.getElementById("tiles").innerHTML = tiles.map(t =>
-    `<div class="tile"><div class="l">${t.l}</div><div class="v">${t.v}</div><div class="s">${t.s}</div></div>`
-  ).join("");
+  const gap = DATA.npa_balance_pct - DATA.npa_count_pct;
+  document.getElementById("tiles").innerHTML = `
+    <div class="kpi hero">
+      <div class="l">NPA rate — count-weighted</div>
+      <div class="v">${fmtPct(DATA.npa_count_pct)}</div>
+      <div class="s">${DATA.on_book.toLocaleString()} on-book loans, share 90+ DPD or default</div>
+    </div>
+    <div class="kpi hero">
+      <div class="l">NPA rate — balance-weighted</div>
+      <div class="v">${fmtPct(DATA.npa_balance_pct)}</div>
+      <span class="delta">+${(gap*100).toFixed(1)}pt vs. count-weighted</span>
+    </div>
+    <div class="kpi">
+      <div class="l">On-book loans</div>
+      <div class="v">${DATA.on_book.toLocaleString()}</div>
+      <div class="s">of ${DATA.total_loans.toLocaleString()} ever originated</div>
+    </div>
+    <div class="kpi">
+      <div class="l">Grade spread</div>
+      <div class="v">${fmtPct(best.npa_pct,0)}&rarr;${fmtPct(worst.npa_pct,0)}</div>
+      <div class="s">grade ${best.loan_grade} to grade ${worst.loan_grade} NPA rate</div>
+    </div>`;
 }
 
 // ---- sequential ramp for grade (ordinal risk) -----------------------------
 const GRADE_RAMP = ["--seq-250","--seq-300","--seq-400","--seq-450","--seq-550","--seq-600","--seq-700"];
 function renderGradeChart(){
-  const root = getComputedStyle(document.documentElement);
   const max = Math.max(...DATA.by_grade.map(r=>r.npa_pct));
   document.getElementById("chart-grade").innerHTML = DATA.by_grade.map((r,i) => {
     const color = `var(${GRADE_RAMP[i]})`;
     const w = (r.npa_pct/max*100).toFixed(1);
-    return `<div class="bar-row" data-tip="Grade ${r.loan_grade}: ${fmtPct(r.npa_pct)} NPA · ${r.n_loans.toLocaleString()} loans">
+    return `<div class="bar-row" data-tip="Grade ${r.loan_grade}: ${fmtPct(r.npa_pct)} NPA &middot; ${r.n_loans.toLocaleString()} loans">
       <div class="lab">Grade ${r.loan_grade}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${w}%; background:${color}"></div></div>
       <div class="bar-val">${fmtPct(r.npa_pct)}</div>
@@ -233,7 +281,7 @@ function renderIntentChart(){
     const color = `var(${colors[i % colors.length]})`;
     const w = (r.npa_pct/max*100).toFixed(1);
     const label = r.loan_intent.charAt(0) + r.loan_intent.slice(1).toLowerCase();
-    return `<div class="bar-row" data-tip="${label}: ${fmtPct(r.npa_pct)} NPA · ${r.n_loans.toLocaleString()} loans">
+    return `<div class="bar-row" data-tip="${label}: ${fmtPct(r.npa_pct)} NPA &middot; ${r.n_loans.toLocaleString()} loans">
       <div class="lab" style="width:120px">${label}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${w}%; background:${color}"></div></div>
       <div class="bar-val">${fmtPct(r.npa_pct)}</div>
@@ -253,14 +301,14 @@ function attachBarTooltips(sel){
 const BUCKET_ORDER = ["Current","DPD30","DPD60","DPD90","Default"];
 const BUCKET_COLOR = {Current:"var(--good)", DPD30:"var(--warning)", DPD60:"var(--serious)", DPD90:"var(--critical)", Default:"var(--default-c)"};
 function renderStack(){
-  // reconstruct on-book distribution from by_grade isn't exact; use roll matrix's implied steady mix instead
   const dist = DATA.bucket_dist;
   const stack = document.getElementById("chart-stack");
+  document.getElementById("stack-sub").textContent = `${DATA.on_book.toLocaleString()} loans on book right now, by delinquency bucket`;
   stack.innerHTML = `<div class="stack">` + BUCKET_ORDER.map(b =>
     `<div data-tip="${b}: ${fmtPct(dist[b]||0)}" style="width:${(dist[b]||0)*100}%; background:${BUCKET_COLOR[b]}"></div>`
   ).join("") + `</div>`;
   document.getElementById("legend-stack").innerHTML = BUCKET_ORDER.map(b =>
-    `<span><span class="sw" style="background:${BUCKET_COLOR[b]}"></span>${b} ${fmtPct(dist[b]||0)}</span>`
+    `<span><span class="sw" style="background:${BUCKET_COLOR[b]}"></span>${b} <span class="fig">${fmtPct(dist[b]||0)}</span></span>`
   ).join("");
   stack.querySelectorAll(".stack > div").forEach(seg=>{
     seg.addEventListener("mousemove", e => showTip(e, seg.dataset.tip));
@@ -275,13 +323,13 @@ function renderHeatmap(){
   const max = 0.97;
   let html = `<table class="heat"><tr><th></th>` + targets.map(t=>`<th>${t}</th>`).join("") + `</tr>`;
   states.forEach(from=>{
-    html += `<tr><td class="rowhead">${from} →</td>`;
+    html += `<tr><td class="rowhead">${from} &rarr;</td>`;
     targets.forEach(to=>{
       const v = (DATA.roll_rate_matrix[from] && DATA.roll_rate_matrix[from][to]) || 0;
       const lightness = v===0 ? 0 : 0.15 + (v/max)*0.7;
-      const bg = v===0 ? "transparent" : `color-mix(in oklab, var(--seq-700) ${Math.round(lightness*100)}%, var(--surface-1))`;
+      const bg = v===0 ? "transparent" : `color-mix(in oklab, var(--seq-700) ${Math.round(lightness*100)}%, var(--panel))`;
       const textColor = lightness > 0.45 ? "#fff" : "var(--ink-1)";
-      html += `<td><div class="cell" style="background:${bg}; color:${textColor}" data-tip="${from} → ${to}: ${fmtPct(v,1)}">${v>0? fmtPct(v,0):"—"}</div></td>`;
+      html += `<td><div class="cell" style="background:${bg}; color:${textColor}" data-tip="${from} &rarr; ${to}: ${fmtPct(v,1)}">${v>0? fmtPct(v,0):"&mdash;"}</div></td>`;
     });
     html += `</tr>`;
   });
@@ -326,7 +374,6 @@ function renderVintage(){
     `<span><span class="sw" style="background:var(${colors[i]})"></span>${v}</span>`
   ).join("");
 
-  // simple crosshair tooltip on mousemove over the svg
   const svgEl = document.querySelector("#chart-vintage svg");
   svgEl.addEventListener("mousemove", e => {
     const rect = svgEl.getBoundingClientRect();
@@ -342,10 +389,24 @@ function renderVintage(){
   svgEl.addEventListener("mouseleave", hideTip);
 }
 
+// ---- insights ledger ---------------------------------------------------------
+function renderLedger(){
+  const items = [
+    "<b>Tighten the underwriting line between grade C and D.</b> NPA rate roughly doubles from C (24.2%) to D (48.4%) — the steepest jump in the whole grade curve. Either raise the approval bar at that boundary or price D-and-below materially higher; treating C and D as adjacent risk tiers understates the gap.",
+    "<b>Move collections effort earlier, to DPD30, not DPD60&ndash;90.</b> The roll-rate matrix shows cure probability collapsing non-linearly: 29.9% of DPD30 accounts self-cure to current, but only 4.7% do once an account reaches DPD90 — and 24.8% of DPD90 accounts roll straight to default the same month. Intervention has far more leverage before that cliff than after it.",
+    "<b>Don't score a recent vintage against a matured one.</b> The newest cohorts look artificially clean only because they haven't aged long enough to default yet — 2026Q2 shows 0.6% cumulative default at month 5 versus ~5&ndash;6% for older vintages at the same age. Compare cohorts at equal months-on-book, never at equal calendar date.",
+    "<b>Layer loan purpose into pricing, not just grade.</b> Medical (24.7%) and debt-consolidation (24.4%) loans run meaningfully higher NPA than venture (18.0%) or education (19.3%) loans at the same grade mix — grade alone is leaving risk on the table."
+  ];
+  document.getElementById("ledger").innerHTML = items.map((t,i) =>
+    `<div class="ledger-item"><div class="idx">${String(i+1).padStart(2,"0")}</div><p>${t}</p></div>`
+  ).join("");
+}
+
 renderTiles();
 renderGradeChart();
 renderIntentChart();
 renderStack();
 renderHeatmap();
 renderVintage();
+renderLedger();
 </script>
