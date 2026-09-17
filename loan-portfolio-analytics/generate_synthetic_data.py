@@ -29,8 +29,9 @@ from pathlib import Path
 RNG_SEED = 42
 rng = np.random.default_rng(RNG_SEED)
 
-SRC = Path.home() / "mnt" / "ML_project" / "clean_data.csv"
-OUT = Path.home() / "mnt" / "ML_project" / "loan-portfolio-analytics" / "data" / "raw"
+PROJECT_ROOT = Path(__file__).resolve().parent          # .../loan-portfolio-analytics
+SRC = PROJECT_ROOT.parent / "clean_data.csv"            # .../ML_project/clean_data.csv
+OUT = PROJECT_ROOT / "data" / "raw"
 OUT.mkdir(parents=True, exist_ok=True)
 
 AS_OF_MONTH = pd.Period("2026-09", freq="M")   # "today" in the synthetic world
