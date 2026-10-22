@@ -1,0 +1,6 @@
+# Benchmarking only (compare_models.py). Deliberately NOT in requirements.txt:
+# the app imports only lightgbm, and shipping catboost/xgboost to Streamlit Cloud
+# adds ~150MB of wheels and slows cold starts for libraries the app never loads.
+-r requirements.txt
+xgboost
+catboost

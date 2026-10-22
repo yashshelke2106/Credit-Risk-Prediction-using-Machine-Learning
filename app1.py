@@ -10,11 +10,11 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     roc_auc_score, roc_curve, confusion_matrix,
 )
+import lightgbm as lgb
 
 # ---------------------------------------------------------------- page setup
 st.set_page_config(
@@ -72,9 +72,18 @@ def load_data(path: str) -> pd.DataFrame:
     return df
 
 
-@st.cache_resource(show_spinner="Training model (first run only — cached afterwards)…")
+@st.cache_resource(show_spinner="Training LightGBM (first run only — cached afterwards)…")
 def train_model(path: str):
-    """Train once per dataset, cache the fitted pipeline + evaluation artifacts."""
+    """Train once per dataset, cache the fitted pipeline + evaluation artifacts.
+
+    LightGBM is the deployed model: it beats Random Forest by 0.013 cross-validated
+    ROC-AUC (0.948 vs 0.935, 5-fold) and dominates it at every decision threshold.
+    See compare_models.py and threshold_analysis.csv for the benchmark.
+
+    Threshold-dependent metrics are deliberately NOT computed here — the raw
+    test-set probabilities are cached instead, so moving the threshold slider
+    re-scores instantly rather than retraining.
+    """
     df = load_data(path)
     X = df.drop(columns=["loan_status"])
     y = df["loan_status"]
@@ -91,9 +100,11 @@ def train_model(path: str):
 
     pipeline = Pipeline([
         ("preprocessing", preprocessor),
-        ("model", RandomForestClassifier(
-            n_estimators=300, max_depth=15,
-            class_weight="balanced", random_state=42, n_jobs=-1)),
+        # Matches compare_models.py exactly, so the published benchmark numbers
+        # describe the model actually running here.
+        ("model", lgb.LGBMClassifier(
+            n_estimators=100, max_depth=7, learning_rate=0.1,
+            class_weight="balanced", random_state=42, verbose=-1)),
     ])
 
     X_tr, X_te, y_tr, y_te = train_test_split(
@@ -101,15 +112,12 @@ def train_model(path: str):
     pipeline.fit(X_tr, y_tr)
 
     proba = pipeline.predict_proba(X_te)[:, 1]
-    preds = (proba >= 0.5).astype(int)
     fpr, tpr, _ = roc_curve(y_te, proba)
 
-    metrics = {
+    evaluation = {
         "auc": roc_auc_score(y_te, proba),
-        "accuracy": accuracy_score(y_te, preds),
-        "precision": precision_score(y_te, preds),
-        "recall": recall_score(y_te, preds),
-        "confusion": confusion_matrix(y_te, preds),
+        "y_true": y_te.to_numpy(),
+        "proba": proba,
         "fpr": fpr, "tpr": tpr,
     }
 
@@ -123,7 +131,27 @@ def train_model(path: str):
         .head(10)
     )
 
-    return pipeline, metrics, importances, num_cols, cat_cols
+    return pipeline, evaluation, importances, num_cols, cat_cols
+
+
+def score_at_threshold(evaluation: dict, threshold: float) -> dict:
+    """Re-score the cached test-set probabilities at an arbitrary cutoff.
+
+    Precision and recall are properties of a (model, threshold) pair, not of a
+    model alone, so the threshold has to be an explicit input everywhere they
+    are reported.
+    """
+    y_true, proba = evaluation["y_true"], evaluation["proba"]
+    preds = (proba >= threshold).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_true, preds, labels=[0, 1]).ravel()
+    return {
+        "accuracy": accuracy_score(y_true, preds),
+        "precision": precision_score(y_true, preds, zero_division=0),
+        "recall": recall_score(y_true, preds, zero_division=0),
+        "confusion": np.array([[tn, fp], [fn, tp]]),
+        "caught": int(tp), "missed": int(fn), "false_alarms": int(fp),
+        "defaults": int(tp + fn),
+    }
 
 
 # ------------------------------------------------------------------- sidebar
@@ -137,6 +165,18 @@ with st.sidebar:
     page = st.radio("Navigate", ["🏠 Home", "📋 Data Overview", "📊 EDA", "🎯 Predict Risk"],
                     label_visibility="collapsed")
 
+    st.divider()
+    st.markdown("**Decision threshold**")
+    threshold = st.slider(
+        "Flag as default when probability ≥", 0.05, 0.95, 0.50, 0.01,
+        help="A lender's real choice. Lower it to catch more defaults at the cost "
+             "of rejecting more good borrowers; raise it to do the reverse. "
+             "Around 0.58 lands near the old Random Forest's precision with ~3 points "
+             "more recall; around 0.67 matches its recall at far higher precision. "
+             "Either way LightGBM is ahead, which is the point: Random Forest was on "
+             "a lower curve, not a different trade-off.",
+    )
+    st.caption(f"Model: **LightGBM** · cutoff `{threshold:.2f}`")
     st.caption(f"Source: `{data_path}`")
 
 df = load_data(data_path)
@@ -315,14 +355,22 @@ elif page == "📊 EDA":
 elif page == "🎯 Predict Risk":
     st.title("🎯 Predict Credit Risk")
 
-    pipeline, metrics, importances, num_cols, cat_cols = train_model(data_path)
+    pipeline, evaluation, importances, num_cols, cat_cols = train_model(data_path)
+    scored = score_at_threshold(evaluation, threshold)
 
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("AUC-ROC", f"{metrics['auc']:.3f}")
-    m2.metric("Accuracy", f"{metrics['accuracy']:.1%}")
-    m3.metric("Precision (default)", f"{metrics['precision']:.1%}")
-    m4.metric("Recall (default)", f"{metrics['recall']:.1%}")
-    st.caption("Evaluated on a 20% held-out test set (stratified split).")
+    m1.metric("AUC-ROC", f"{evaluation['auc']:.3f}",
+              help="Threshold-independent: ranks all applicants, so it does not "
+                   "move when you change the cutoff.")
+    m2.metric("Accuracy", f"{scored['accuracy']:.1%}")
+    m3.metric("Precision (default)", f"{scored['precision']:.1%}")
+    m4.metric("Recall (default)", f"{scored['recall']:.1%}")
+    st.caption(
+        f"LightGBM on a 20% held-out test set (stratified), cutoff {threshold:.2f} — "
+        f"catches **{scored['caught']:,} of {scored['defaults']:,}** defaults "
+        f"({scored['missed']:,} missed) with **{scored['false_alarms']:,}** good "
+        f"borrowers wrongly flagged. Only AUC-ROC is independent of the cutoff."
+    )
 
     left, right = st.columns([3, 2], gap="large")
 
@@ -356,6 +404,9 @@ elif page == "🎯 Predict Risk":
             input_df = pd.DataFrame([user_input])
             proba = float(pipeline.predict_proba(input_df)[0, 1])
 
+            cut = threshold * 100
+            caution = max(cut * 0.6, 1.0)  # watch-list band below the decline cutoff
+
             fig = go.Figure(go.Indicator(
                 mode="gauge+number",
                 value=proba * 100,
@@ -365,21 +416,31 @@ elif page == "🎯 Predict Risk":
                     "axis": {"range": [0, 100]},
                     "bar": {"color": "#2c3e50"},
                     "steps": [
-                        {"range": [0, 30], "color": "#d5f5e3"},
-                        {"range": [30, 60], "color": "#fdebd0"},
-                        {"range": [60, 100], "color": "#fadbd8"},
+                        {"range": [0, caution], "color": "#d5f5e3"},
+                        {"range": [caution, cut], "color": "#fdebd0"},
+                        {"range": [cut, 100], "color": "#fadbd8"},
                     ],
+                    "threshold": {
+                        "line": {"color": BAD, "width": 4},
+                        "thickness": 0.9,
+                        "value": cut,
+                    },
                 },
             ))
             fig.update_layout(height=280, margin=dict(t=60, b=10, l=30, r=30))
             st.plotly_chart(fig, use_container_width=True)
 
-            if proba >= 0.5:
-                st.error(f"**High risk** — {proba:.1%} estimated default probability.")
-            elif proba >= 0.3:
-                st.warning(f"**Moderate risk** — {proba:.1%} estimated default probability.")
+            if proba >= threshold:
+                st.error(f"**Decline** — {proba:.1%} default probability, at or above "
+                         f"the {threshold:.0%} cutoff.")
+            elif proba >= caution / 100:
+                st.warning(f"**Refer for review** — {proba:.1%} default probability, "
+                           f"below the {threshold:.0%} cutoff but not clean.")
             else:
-                st.success(f"**Low risk** — {proba:.1%} estimated default probability.")
+                st.success(f"**Approve** — {proba:.1%} default probability, well below "
+                           f"the {threshold:.0%} cutoff.")
+            st.caption("Bands follow the sidebar threshold, so the recommendation "
+                       "changes with the lending policy rather than being hardcoded.")
         else:
             st.info("Fill in the applicant details and click **Assess risk**.")
 
@@ -387,9 +448,9 @@ elif page == "🎯 Predict Risk":
     left, right = st.columns(2)
 
     with left:
-        fig = px.area(x=metrics["fpr"], y=metrics["tpr"],
+        fig = px.area(x=evaluation["fpr"], y=evaluation["tpr"],
                       labels={"x": "False positive rate", "y": "True positive rate"},
-                      title=f"ROC curve (AUC = {metrics['auc']:.3f})",
+                      title=f"ROC curve (AUC = {evaluation['auc']:.3f})",
                       color_discrete_sequence=[ACCENT], template=PLOTLY_TEMPLATE)
         fig.add_shape(type="line", x0=0, y0=0, x1=1, y1=1, line=dict(dash="dash", color="grey"))
         st.plotly_chart(fig, use_container_width=True)
@@ -397,5 +458,16 @@ elif page == "🎯 Predict Risk":
     with right:
         fig = px.bar(importances.sort_values("importance"), x="importance", y="feature",
                      orientation="h", color_discrete_sequence=[ACCENT],
-                     title="Top 10 feature importances", template=PLOTLY_TEMPLATE)
+                     title="Top 10 feature importances (LightGBM split count)",
+                     template=PLOTLY_TEMPLATE)
         st.plotly_chart(fig, use_container_width=True)
+
+    cm = scored["confusion"]
+    st.markdown(f"**Confusion matrix at cutoff {threshold:.2f}** (test set, "
+                f"{len(evaluation['y_true']):,} applicants)")
+    st.dataframe(
+        pd.DataFrame(cm,
+                     index=["Actual: repaid", "Actual: default"],
+                     columns=["Predicted: repaid", "Predicted: default"]),
+        use_container_width=True,
+    )
