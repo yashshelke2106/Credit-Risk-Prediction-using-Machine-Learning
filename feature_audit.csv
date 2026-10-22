@@ -1,0 +1,13 @@
+Feature,Recorded,Verdict,Flag
+person_age,Application,Stated by applicant at application. No outcome information.,OK
+person_income,Application,"Stated/verified at application, before any repayment.",OK
+person_home_ownership,Application,Applicant status at application.,OK
+person_emp_length,Application,Employment history at application.,OK
+loan_intent,Application,Stated purpose at application.,OK
+loan_amnt,Origination,"Amount requested/approved at origination, before outcome.",OK
+loan_percent_income,Derived,"loan_amnt / person_income; both known at origination. Redundant, not leaky.",OK
+cb_person_default_on_file,"Bureau, pre-application",PRIOR defaults from credit bureau. Strictly before this loan.,OK
+cb_person_cred_hist_length,"Bureau, pre-application",History length at pull. No outcome information.,OK
+loan_grade,Underwriting output,"Lender's own risk verdict, produced BY underwriting. Pre-outcome, but target-adjacent.",CAUTION
+loan_int_rate,Underwriting output,"Priced off loan_grade i.e. off expected default. Pre-outcome, but target-adjacent.",CAUTION
+loan_status,TARGET,Outcome being predicted.,TARGET

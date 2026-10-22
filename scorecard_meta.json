@@ -1,0 +1,28 @@
+{
+  "cv_auc": 0.8699880324050582,
+  "cv_std": 0.0032519395814851774,
+  "ks": 0.6118941477802129,
+  "rows": 32416,
+  "default_rate": 0.21868830207305034,
+  "factor": 28.85390081777927,
+  "offset": 487.1228762045055,
+  "cutoff": 515,
+  "approval_rate": 0.7209094274432379,
+  "defaults_captured": 0.7566652560304697,
+  "approved_bad_rate": 0.07381573879926398,
+  "good_declined": 0.1454179334307261,
+  "top3_iv": [
+    {
+      "Feature": "loan_grade",
+      "IV": 0.8790247800297198
+    },
+    {
+      "Feature": "loan_percent_income",
+      "IV": 0.7079248103511927
+    },
+    {
+      "Feature": "loan_int_rate",
+      "IV": 0.6191816445408925
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+Feature,IV,Flag
+loan_grade,0.8790247800297198,SUSPICIOUS (>0.5)
+loan_percent_income,0.7079248103511927,SUSPICIOUS (>0.5)
+loan_int_rate,0.6191816445408925,SUSPICIOUS (>0.5)
+person_income,0.4606773474234685,ok
+person_home_ownership,0.3752839559425798,ok
+cb_person_default_on_file,0.16427959739534526,ok
+loan_intent,0.09592182686353419,ok
+loan_amnt,0.0736820705785368,ok
+person_emp_length,0.06034918629099842,ok
+person_age,0.006488579586231895,WEAK (<0.02)
+cb_person_cred_hist_length,0.003956235247956977,WEAK (<0.02)
