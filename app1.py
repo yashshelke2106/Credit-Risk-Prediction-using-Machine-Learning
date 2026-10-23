@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,15 +5,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     roc_auc_score, roc_curve, confusion_matrix,
 )
 import lightgbm as lgb
+
+import credit_data as cd  # shared leak-free loader + pipeline - see leakage_audit.py
 
 # ---------------------------------------------------------------- page setup
 st.set_page_config(
@@ -50,65 +47,44 @@ st.markdown(
 
 # ---------------------------------------------------------------- data layer
 @st.cache_data
-def load_data(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path)
-
-    # drop notebook-derived helper columns if they leaked into the saved CSV
-    df = df.drop(columns=["age_group"], errors="ignore")
-
-    if "person_age" in df.columns:
-        df["person_age"] = pd.to_numeric(df["person_age"], errors="coerce").clip(1, 100)
-        if df["person_age"].isna().any():
-            med = df["person_age"].median(skipna=True)
-            df["person_age"] = df["person_age"].fillna(30 if np.isnan(med) else int(med))
-        df["person_age"] = df["person_age"].astype(int)
-
-    for col in ["person_income", "loan_amnt"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-            med = df[col].median(skipna=True)
-            df[col] = df[col].fillna(0 if np.isnan(med) else int(med)).round().astype(int)
-
-    return df
+def load_data():
+    """Raw data: impossible values nulled (not dropped), exact duplicates
+    removed. NO mean/median imputation here - that happens inside the model
+    pipeline, fit on the training fold only. Missing cells and the dedup count
+    shown on the Data Overview page are real and intentional; see
+    leakage_audit.py for why pre-split imputation on clean_data.csv was a
+    leak (worth ~0.001 AUC) that this app used to carry."""
+    X, y, report = cd.load_raw()
+    df = X.copy()
+    df["loan_status"] = y.values
+    return df, report
 
 
 @st.cache_resource(show_spinner="Training LightGBM (first run only — cached afterwards)…")
-def train_model(path: str):
-    """Train once per dataset, cache the fitted pipeline + evaluation artifacts.
+def train_model():
+    """Train once, cache the fitted pipeline + evaluation artifacts.
 
-    LightGBM is the deployed model: it beats Random Forest by 0.013 cross-validated
-    ROC-AUC (0.948 vs 0.935, 5-fold) and dominates it at every decision threshold.
-    See compare_models.py and threshold_analysis.csv for the benchmark.
+    Uses credit_data.make_pipeline(): raw data, impossible values nulled (not
+    dropped), exact duplicates removed, and imputation/scaling/encoding fit
+    INSIDE the pipeline so no statistic crosses the train/test split - the
+    fix for the leak documented in leakage_audit.py. Reproduces the corrected
+    benchmark in recheck_models.py: LightGBM 0.9473 +/- 0.0025 CV ROC-AUC,
+    vs 0.9482 on the old leaky clean_data.csv (a ~0.001 AUC difference).
 
     Threshold-dependent metrics are deliberately NOT computed here — the raw
     test-set probabilities are cached instead, so moving the threshold slider
     re-scores instantly rather than retraining.
     """
-    df = load_data(path)
-    X = df.drop(columns=["loan_status"])
-    y = df["loan_status"]
-
+    X, y, _ = cd.load_raw()
     num_cols = X.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = X.select_dtypes(exclude=[np.number]).columns.tolist()
 
-    preprocessor = ColumnTransformer([
-        ("num", Pipeline([("imputer", SimpleImputer(strategy="mean")),
-                          ("scaler", StandardScaler())]), num_cols),
-        ("cat", Pipeline([("imputer", SimpleImputer(strategy="most_frequent")),
-                          ("encoder", OneHotEncoder(handle_unknown="ignore"))]), cat_cols),
-    ])
-
-    pipeline = Pipeline([
-        ("preprocessing", preprocessor),
-        # Matches compare_models.py exactly, so the published benchmark numbers
-        # describe the model actually running here.
-        ("model", lgb.LGBMClassifier(
-            n_estimators=100, max_depth=7, learning_rate=0.1,
-            class_weight="balanced", random_state=42, verbose=-1)),
-    ])
+    pipeline = cd.make_pipeline(X, lgb.LGBMClassifier(
+        n_estimators=100, max_depth=7, learning_rate=0.1,
+        class_weight="balanced", random_state=cd.RANDOM_STATE, verbose=-1))
 
     X_tr, X_te, y_tr, y_te = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42)
+        X, y, test_size=0.2, stratify=y, random_state=cd.RANDOM_STATE)
     pipeline.fit(X_tr, y_tr)
 
     proba = pipeline.predict_proba(X_te)[:, 1]
@@ -158,10 +134,6 @@ def score_at_threshold(evaluation: dict, threshold: float) -> dict:
 with st.sidebar:
     st.markdown("## 💳 Credit Risk Analytics")
 
-    clean_path, orig_path = "clean_data.csv", "credit_risk_dataset.csv"
-    options = [p for p in (clean_path, orig_path) if os.path.exists(p)] or [orig_path]
-    data_path = st.selectbox("Dataset", options, format_func=lambda p: p.replace(".csv", ""))
-
     page = st.radio("Navigate", ["🏠 Home", "📋 Data Overview", "📊 EDA", "🎯 Predict Risk"],
                     label_visibility="collapsed")
 
@@ -177,9 +149,9 @@ with st.sidebar:
              "a lower curve, not a different trade-off.",
     )
     st.caption(f"Model: **LightGBM** · cutoff `{threshold:.2f}`")
-    st.caption(f"Source: `{data_path}`")
+    st.caption("Source: `credit_risk_dataset.csv` (deduplicated, in-fold imputation)")
 
-df = load_data(data_path)
+df, data_report = load_data()
 
 
 # ---------------------------------------------------------------------- home
@@ -355,7 +327,7 @@ elif page == "📊 EDA":
 elif page == "🎯 Predict Risk":
     st.title("🎯 Predict Credit Risk")
 
-    pipeline, evaluation, importances, num_cols, cat_cols = train_model(data_path)
+    pipeline, evaluation, importances, num_cols, cat_cols = train_model()
     scored = score_at_threshold(evaluation, threshold)
 
     m1, m2, m3, m4 = st.columns(4)

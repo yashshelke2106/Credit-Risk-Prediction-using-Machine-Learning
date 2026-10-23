@@ -229,7 +229,7 @@ python recheck_models.py            # leaky vs corrected comparison
 
 The app has four sections — **Home**, **Data Overview**, **EDA**, and **Predict Risk**, which scores an applicant with a decision-threshold slider that re-scores cached probabilities instantly instead of retraining.
 
-> **Note:** `app1.py` and `compare_models.py` still read `clean_data.csv`. Per the ablation that costs ~0.0009 AUC, so the app's displayed metrics are very slightly optimistic. Migrating them to `credit_data.load_raw()` is the outstanding change.
+> **Resolved:** `app1.py` now trains on `credit_data.load_raw()` - raw data, deduplicated, with imputation fit inside the pipeline. Its displayed metrics match the corrected, leak-free numbers above rather than the old `clean_data.csv` figures. `compare_models.py` is kept as-is and still reads `clean_data.csv` deliberately, to preserve the leaky-vs-corrected comparison in the ablation table.
 
 ## Author
 
