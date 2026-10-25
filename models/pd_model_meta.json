@@ -1,0 +1,23 @@
+{
+  "model_version": "2.0",
+  "cutoff": 0.23,
+  "lgd": 0.45,
+  "rate_fill": {
+    "A": 7.49,
+    "B": 10.99,
+    "C": 13.48,
+    "D": 15.31,
+    "E": 16.82,
+    "F": 18.535,
+    "G": 20.16
+  },
+  "pd_floor": 0.0003,
+  "excluded_features": [
+    "person_age"
+  ],
+  "calibration": "sigmoid, 3-fold inner CV",
+  "train_rows": 32416,
+  "default_rate": 0.21868830207305034,
+  "sklearn": "1.9.1",
+  "lightgbm": "4.7.0"
+}

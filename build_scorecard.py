@@ -1,7 +1,7 @@
 """WoE credit scorecard: IV table, logistic regression on WoE, points, cut-off.
 
 Run:  python build_scorecard.py
-Writes: iv_table.csv, scorecard.csv, cutoff_analysis.csv, scorecard_meta.json
+Writes (to reports/): iv_table.csv, scorecard.csv, cutoff_analysis.csv, scorecard_meta.json
 
 Scaling: base score 600 at 50:1 odds (good:bad), PDO 20.
     factor = PDO / ln(2)
@@ -15,6 +15,7 @@ from the target and would otherwise leak exactly like the imputation this
 project was audited for.
 """
 import json
+import os
 import numpy as np, pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
@@ -27,6 +28,7 @@ BASE, PDO, ODDS = 600, 20, 50
 FACTOR = PDO / np.log(2)
 OFFSET = BASE - FACTOR * np.log(ODDS)
 RS = cd.RANDOM_STATE
+os.makedirs("reports", exist_ok=True)
 cv = StratifiedKFold(5, shuffle=True, random_state=RS)
 
 X, y, rep = cd.load_raw()
@@ -50,7 +52,7 @@ feats = list(enc.woe_maps_.keys()); n = len(feats)
 
 iv = enc.iv_table()
 iv["Flag"] = iv.IV.map(lambda v: "WEAK (<0.02)" if v < 0.02 else ("SUSPICIOUS (>0.5)" if v > 0.5 else "ok"))
-iv.to_csv("iv_table.csv", index=False)
+iv.to_csv("reports/iv_table.csv", index=False)
 print("\n--- INFORMATION VALUE ---"); print(iv.to_string(index=False))
 
 rows = []
@@ -60,7 +62,7 @@ for i, f in enumerate(feats):
                      "BadRate": round(float(r.BadRate), 4), "WoE": round(float(r.WoE), 4),
                      "IV_contrib": round(float(r.IV_contrib), 4), "Beta": round(float(betas[i]), 4),
                      "Points": int(round(-(betas[i] * r.WoE + alpha / n) * FACTOR + OFFSET / n))})
-pd.DataFrame(rows).to_csv("scorecard.csv", index=False)
+pd.DataFrame(rows).to_csv("reports/scorecard.csv", index=False)
 print(f"\nscorecard.csv: {len(rows)} bins across {n} characteristics")
 
 pts = sum(-(betas[i] * W[:, i] + alpha / n) * FACTOR + OFFSET / n for i in range(n))
@@ -81,7 +83,7 @@ for c in range(int(score.min()), int(score.max()) + 1):
     grid.append({"Cutoff": c, "Approval rate": na / tot, "Defaults captured": (totbad - ba) / totbad,
                  "Approved book bad rate": ba / na, "Good applicants declined": gd / totgood,
                  "KS": abs((totbad - ba) / totbad - gd / totgood)})
-g = pd.DataFrame(grid); g.to_csv("cutoff_analysis.csv", index=False)
+g = pd.DataFrame(grid); g.to_csv("reports/cutoff_analysis.csv", index=False)
 best = g.loc[g.KS.idxmax()]
 print("\n--- CUT-OFF GRID (every 20 points) ---")
 sh = g[g.Cutoff % 20 == 0].copy()
@@ -100,5 +102,5 @@ json.dump({"cv_auc": float(aucs.mean()), "cv_std": float(aucs.std()), "ks": floa
            "approved_bad_rate": float(best["Approved book bad rate"]),
            "good_declined": float(best["Good applicants declined"]),
            "top3_iv": iv.head(3)[["Feature", "IV"]].to_dict("records")},
-          open("scorecard_meta.json", "w"), indent=2)
+          open("reports/scorecard_meta.json", "w"), indent=2)
 print("\nWrote iv_table.csv, scorecard.csv, cutoff_analysis.csv, scorecard_meta.json")

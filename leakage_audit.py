@@ -1,7 +1,7 @@
 """Leakage audit for the credit risk model, plus corrected 5-fold CV.
 
 Run:  python leakage_audit.py
-Writes: leakage_ablation.csv, feature_audit.csv
+Writes (to reports/): leakage_ablation.csv, feature_audit.csv
 
 Three checks, in the order they matter:
   A. Was any fitted preprocessing applied before the train/test split?
@@ -10,6 +10,7 @@ Three checks, in the order they matter:
 Then an ablation that prices each confirmed leak in ROC-AUC, so the fix is
 reported as a number rather than an assertion.
 """
+import os
 import numpy as np, pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -18,6 +19,7 @@ from sklearn.metrics import roc_auc_score, roc_curve
 import credit_data as cd
 
 RS = cd.RANDOM_STATE
+os.makedirs("reports", exist_ok=True)
 cv = StratifiedKFold(5, shuffle=True, random_state=RS)
 raw = pd.read_csv(cd.RAW)
 clean = pd.read_csv(cd.CLEAN)
@@ -64,7 +66,7 @@ AUDIT = [
  ("loan_status","TARGET","Outcome being predicted.","TARGET"),
 ]
 fa = pd.DataFrame(AUDIT, columns=["Feature","Recorded","Verdict","Flag"])
-fa.to_csv("feature_audit.csv", index=False)
+fa.to_csv("reports/feature_audit.csv", index=False)
 for _, r in fa.iterrows(): print(f"  [{r.Flag:8s}] {r.Feature:27s} {r.Verdict}")
 print("  VERDICT: no feature is recorded after the outcome. Two are underwriting outputs.")
 
@@ -92,7 +94,7 @@ X3, y3, _ = cd.load_raw(dedupe=True)
 rows += ev(X3, y3, "3. CORRECTED (in-fold + deduped)", ("Logistic Regression", "Random Forest"))
 Xa = X3.drop(columns=["loan_grade", "loan_int_rate"])
 rows += ev(Xa, y3, "4. Corrected, application-only", ("Logistic Regression", "Random Forest"))
-df = pd.DataFrame(rows); df.to_csv("leakage_ablation.csv", index=False)
+df = pd.DataFrame(rows); df.to_csv("reports/leakage_ablation.csv", index=False)
 
 rf = df[df.Model == "Random Forest"].reset_index(drop=True)
 print(f"\n  RF leaky -> corrected: {rf.loc[0,'CV ROC-AUC']:.4f} -> {rf.loc[2,'CV ROC-AUC']:.4f} "

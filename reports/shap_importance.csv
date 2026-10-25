@@ -1,0 +1,11 @@
+Feature,Mean |SHAP| (log-odds)
+loan_percent_income,0.7403504828047484
+person_home_ownership,0.709031433966608
+person_income,0.7001239208289614
+loan_intent,0.5672768473852359
+loan_int_rate,0.5189367851756774
+loan_grade,0.40306962112960437
+person_emp_length,0.09859543426830807
+loan_amnt,0.09678683583853138
+cb_person_cred_hist_length,0.05487591751506662
+cb_person_default_on_file,0.016558572011456024

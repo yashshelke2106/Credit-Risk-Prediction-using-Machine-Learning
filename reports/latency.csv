@@ -1,0 +1,5 @@
+Path,p50 ms,p95 ms
+PD only (predict_pd),11.47956749991863,15.518009149957372
+PD + decision + reason codes,28.476683499889077,43.159405999995215
+FastAPI /score (in-process),38.31554600003528,53.16268904991829
+"FastAPI /score over HTTP (uvicorn, localhost)",36.875681000083205,52.92178644997421

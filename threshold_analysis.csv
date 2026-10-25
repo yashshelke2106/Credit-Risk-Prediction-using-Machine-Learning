@@ -1,4 +1,0 @@
-Configuration,Threshold,Precision,Recall,Defaults Caught,False Alarms
-Random Forest @ 0.50 (previous deployment),0.5,0.885934819897084,0.7264416315049227,1033,133
-LightGBM @ matched precision,0.5763840873108744,0.8858784893267652,0.7587904360056259,1079,139
-LightGBM @ matched recall,0.6728588437634588,0.9408014571948998,0.7264416315049227,1033,65

@@ -1,0 +1,425 @@
+{
+  "data": {
+    "rows_loaded": 32581,
+    "cells_nulled": 7,
+    "duplicates_removed": 165,
+    "rows_final": 32416,
+    "default_rate": 0.21868830207305034
+  },
+  "cv": "stratified 5-fold, seed 42",
+  "metrics": [
+    {
+      "Model": "Majority class (baseline)",
+      "Variant": "-",
+      "ROC-AUC": 0.5,
+      "ROC-AUC std": 0.0,
+      "Gini": 0.0,
+      "PR-AUC": 0.21868830195386918,
+      "PR-AUC std": 5.977182584352523e-05,
+      "Brier": 0.17086373055194432,
+      "Brier std": 3.362634018123891e-05,
+      "KS": 0.0,
+      "Mean PD": 0.21868830203580192,
+      "ECE": 2.9216851160640545e-11
+    },
+    {
+      "Model": "Logistic Regression",
+      "Variant": "raw",
+      "ROC-AUC": 0.870748967400359,
+      "ROC-AUC std": 0.0033516087128728756,
+      "Gini": 0.741497934800718,
+      "PR-AUC": 0.717228856761216,
+      "PR-AUC std": 0.012035798147682263,
+      "Brier": 0.13872130755125106,
+      "Brier std": 0.002187288303181748,
+      "KS": 0.6036083435630496,
+      "Mean PD": 0.3807007301420385,
+      "ECE": 0.16201242806898813
+    },
+    {
+      "Model": "Logistic Regression",
+      "Variant": "calibrated",
+      "ROC-AUC": 0.870748967400359,
+      "ROC-AUC std": 0.0033516087128728756,
+      "Gini": 0.741497934800718,
+      "PR-AUC": 0.717228856761216,
+      "PR-AUC std": 0.0120357981476823,
+      "Brier": 0.1033505097798511,
+      "Brier std": 0.0019110362269123046,
+      "KS": 0.6038326908051712,
+      "Mean PD": 0.2187745008115688,
+      "ECE": 0.01743367662455973
+    },
+    {
+      "Model": "WoE Scorecard",
+      "Variant": "raw",
+      "ROC-AUC": 0.8699880324050582,
+      "ROC-AUC std": 0.0032519395814851774,
+      "Gini": 0.7399760648101164,
+      "PR-AUC": 0.71358267313601,
+      "PR-AUC std": 0.011347295863457401,
+      "Brier": 0.10460962312381872,
+      "Brier std": 0.0017538392501626834,
+      "KS": 0.6118941477802129,
+      "Mean PD": 0.2186675087696933,
+      "ECE": 0.021088300469319615
+    },
+    {
+      "Model": "WoE Scorecard",
+      "Variant": "calibrated",
+      "ROC-AUC": 0.8699880324050582,
+      "ROC-AUC std": 0.0032519395814851774,
+      "Gini": 0.7399760648101164,
+      "PR-AUC": 0.71358267313601,
+      "PR-AUC std": 0.011347295863457401,
+      "Brier": 0.10462708085355835,
+      "Brier std": 0.0017492718031882457,
+      "KS": 0.6118941477802129,
+      "Mean PD": 0.218741540250708,
+      "ECE": 0.021169989033934015
+    },
+    {
+      "Model": "Random Forest",
+      "Variant": "raw",
+      "ROC-AUC": 0.9342119703405259,
+      "ROC-AUC std": 0.002202662646253714,
+      "Gini": 0.8684239406810519,
+      "PR-AUC": 0.8850584963733692,
+      "PR-AUC std": 0.005513601229296832,
+      "Brier": 0.07103100386551016,
+      "Brier std": 0.001217377420965092,
+      "KS": 0.7254987121393353,
+      "Mean PD": 0.30587342106366866,
+      "ECE": 0.09059126736983954
+    },
+    {
+      "Model": "Random Forest",
+      "Variant": "calibrated",
+      "ROC-AUC": 0.9342119703405259,
+      "ROC-AUC std": 0.002202662646253714,
+      "Gini": 0.8684239406810519,
+      "PR-AUC": 0.8850584963733692,
+      "PR-AUC std": 0.005513601229296832,
+      "Brier": 0.05881562772053123,
+      "Brier std": 0.0020047313610544702,
+      "KS": 0.7254653273982905,
+      "Mean PD": 0.22024857737285225,
+      "ECE": 0.01637797686906034
+    },
+    {
+      "Model": "LightGBM (all features)",
+      "Variant": "raw",
+      "ROC-AUC": 0.9473117853698,
+      "ROC-AUC std": 0.002488369260040877,
+      "Gini": 0.8946235707396,
+      "PR-AUC": 0.9015262991683807,
+      "PR-AUC std": 0.005014928607749696,
+      "Brier": 0.07033079773794584,
+      "Brier std": 0.0012639380103555207,
+      "KS": 0.7456330305263801,
+      "Mean PD": 0.3138259641123046,
+      "ECE": 0.09664097951895194
+    },
+    {
+      "Model": "LightGBM (all features)",
+      "Variant": "calibrated",
+      "ROC-AUC": 0.9473117853698,
+      "ROC-AUC std": 0.002488369260040877,
+      "Gini": 0.8946235707396,
+      "PR-AUC": 0.9015262991683806,
+      "PR-AUC std": 0.005014928607749711,
+      "Brier": 0.053982580510835806,
+      "Brier std": 0.002148882801356712,
+      "KS": 0.7456721576211145,
+      "Mean PD": 0.22108373787618782,
+      "ECE": 0.004532831524509033
+    },
+    {
+      "Model": "LightGBM deployed (excl. age)",
+      "Variant": "raw",
+      "ROC-AUC": 0.9448855635869146,
+      "ROC-AUC std": 0.0033644557735657407,
+      "Gini": 0.8897711271738291,
+      "PR-AUC": 0.897648353341715,
+      "PR-AUC std": 0.006134274722431517,
+      "Brier": 0.07201559071759378,
+      "Brier std": 0.0014370736326288136,
+      "KS": 0.7398322340457711,
+      "Mean PD": 0.31486304708022006,
+      "ECE": 0.0976617074344721
+    },
+    {
+      "Model": "LightGBM deployed (excl. age)",
+      "Variant": "calibrated",
+      "ROC-AUC": 0.9448855635869146,
+      "ROC-AUC std": 0.0033644557735657676,
+      "Gini": 0.8897711271738291,
+      "PR-AUC": 0.897648353341715,
+      "PR-AUC std": 0.006134274722431492,
+      "Brier": 0.05525327463835282,
+      "Brier std": 0.002369217867591549,
+      "KS": 0.7398713611405057,
+      "Mean PD": 0.22098540862822866,
+      "ECE": 0.007234550674120883
+    }
+  ],
+  "cutoff": 0.23,
+  "cutoff_oracle": 0.28,
+  "policies": [
+    {
+      "Policy": "Approve everyone",
+      "Approval rate": 1.0,
+      "Defaults declined (recall)": 0.0,
+      "Precision (declined who default)": 0.0,
+      "Good borrowers declined": 0.0,
+      "Bad rate in approved book": 0.21868830207305034,
+      "Realised loss": 34635903.75,
+      "Realised revenue": 25003819.3475,
+      "Realised profit": -9632084.4025,
+      "TN": 25327,
+      "FP": 0,
+      "FN": 7089,
+      "TP": 0,
+      "Expected loss (model)": 34794985.088406675
+    },
+    {
+      "Policy": "Old app: uncalibrated LightGBM @ 0.50",
+      "Approval rate": 0.7887154491609082,
+      "Defaults declined (recall)": 0.7909437156157427,
+      "Precision (declined who default)": 0.8186596583442839,
+      "Good borrowers declined": 0.04903857543333202,
+      "Bad rate in approved book": 0.05796534595376853,
+      "Realised loss": 6014733.75,
+      "Realised revenue": 23316601.270000003,
+      "Realised profit": 17301867.520000003,
+      "TN": 24085,
+      "FP": 1242,
+      "FN": 1482,
+      "TP": 5607,
+      "Expected loss (model)": NaN
+    },
+    {
+      "Policy": "Deployed: calibrated PD < 0.230 (expected-profit cutoff)",
+      "Approval rate": 0.7659489141164857,
+      "Defaults declined (recall)": 0.8098462406545351,
+      "Precision (declined who default)": 0.7566890734150521,
+      "Good borrowers declined": 0.07288664271330991,
+      "Bad rate in approved book": 0.05429135285351806,
+      "Realised loss": 5467275.0,
+      "Realised revenue": 22644876.925000004,
+      "Realised profit": 17177601.925000004,
+      "TN": 23481,
+      "FP": 1846,
+      "FN": 1348,
+      "TP": 5741,
+      "Expected loss (model)": 5356430.635302335
+    },
+    {
+      "Policy": "Per-loan break-even: PD < rate/(rate+LGD)",
+      "Approval rate": 0.7546890424481737,
+      "Defaults declined (recall)": 0.8183100578360841,
+      "Precision (declined who default)": 0.7295020120724346,
+      "Good borrowers declined": 0.08492912701859676,
+      "Bad rate in approved book": 0.052648790058862,
+      "Realised loss": 5347012.5,
+      "Realised revenue": 22582022.509999998,
+      "Realised profit": 17235010.009999998,
+      "TN": 23176,
+      "FP": 2151,
+      "FN": 1288,
+      "TP": 5801,
+      "Expected loss (model)": 5209709.904731989
+    },
+    {
+      "Policy": "Oracle: deployed model, best realised cutoff 0.280 (hindsight)",
+      "Approval rate": 0.7903812931885489,
+      "Defaults declined (recall)": 0.7868528706446607,
+      "Precision (declined who default)": 0.820897718910964,
+      "Good borrowers declined": 0.04805148655584949,
+      "Bad rate in approved book": 0.05897505952148628,
+      "Realised loss": 6079342.5,
+      "Realised revenue": 23341451.369999997,
+      "Realised profit": 17262108.869999997,
+      "TN": 24110,
+      "FP": 1217,
+      "FN": 1511,
+      "TP": 5578,
+      "Expected loss (model)": 6107180.664140644
+    }
+  ],
+  "fairness": [
+    {
+      "band": "20-25",
+      "Applicants": 15245.0,
+      "Actual default rate": 0.23135454247294196,
+      "Mean predicted PD": 0.2323851734440281,
+      "Approval rate": 0.7536897343391276,
+      "Approval rate among good borrowers": 0.9270353302611367,
+      "Default rate in approved": 0.05456919060052219
+    },
+    {
+      "band": "26-35",
+      "Applicants": 13711.0,
+      "Actual default rate": 0.20691415651666545,
+      "Mean predicted PD": 0.211244847488214,
+      "Approval rate": 0.775362847348844,
+      "Approval rate among good borrowers": 0.9237631046533015,
+      "Default rate in approved": 0.05512181356410498
+    },
+    {
+      "band": "36-45",
+      "Applicants": 2809.0,
+      "Actual default rate": 0.20683517265930937,
+      "Mean predicted PD": 0.20711571092574388,
+      "Approval rate": 0.7871128515485938,
+      "Approval rate among good borrowers": 0.9434470377019749,
+      "Default rate in approved": 0.04929895974672094
+    },
+    {
+      "band": "46-55",
+      "Applicants": 512.0,
+      "Actual default rate": 0.21875,
+      "Mean predicted PD": 0.2073900512487365,
+      "Approval rate": 0.779296875,
+      "Approval rate among good borrowers": 0.9375,
+      "Default rate in approved": 0.06015037593984962
+    },
+    {
+      "band": "56+",
+      "Applicants": 134.0,
+      "Actual default rate": 0.23880597014925373,
+      "Mean predicted PD": 0.27080706163631996,
+      "Approval rate": 0.6940298507462687,
+      "Approval rate among good borrowers": 0.8921568627450981,
+      "Default rate in approved": 0.021505376344086023
+    }
+  ],
+  "fairness_gaps_pp": {
+    "Approval rate": 3.3423117209466224,
+    "Actual default rate": 2.451936981363259,
+    "Approval rate among good borrowers": 1.968393304867344,
+    "Default rate in approved": 1.0851416193128682
+  },
+  "stability": [
+    {
+      "Variable": "Model score (PD)",
+      "Type": "score",
+      "PSI": 0.0006965960477966367,
+      "Status": "stable"
+    },
+    {
+      "Variable": "loan_percent_income",
+      "Type": "CSI",
+      "PSI": 0.0023557136346544693,
+      "Status": "stable"
+    },
+    {
+      "Variable": "person_home_ownership",
+      "Type": "CSI",
+      "PSI": 0.00017129247881363414,
+      "Status": "stable"
+    },
+    {
+      "Variable": "person_income",
+      "Type": "CSI",
+      "PSI": 0.002600144604406475,
+      "Status": "stable"
+    },
+    {
+      "Variable": "loan_intent",
+      "Type": "CSI",
+      "PSI": 0.0024456932628947655,
+      "Status": "stable"
+    },
+    {
+      "Variable": "loan_int_rate",
+      "Type": "CSI",
+      "PSI": 0.0019862858814564885,
+      "Status": "stable"
+    }
+  ],
+  "shap_importance": [
+    {
+      "Feature": "loan_percent_income",
+      "Mean |SHAP| (log-odds)": 0.7403504828047484
+    },
+    {
+      "Feature": "person_home_ownership",
+      "Mean |SHAP| (log-odds)": 0.709031433966608
+    },
+    {
+      "Feature": "person_income",
+      "Mean |SHAP| (log-odds)": 0.7001239208289614
+    },
+    {
+      "Feature": "loan_intent",
+      "Mean |SHAP| (log-odds)": 0.5672768473852359
+    },
+    {
+      "Feature": "loan_int_rate",
+      "Mean |SHAP| (log-odds)": 0.5189367851756774
+    },
+    {
+      "Feature": "loan_grade",
+      "Mean |SHAP| (log-odds)": 0.40306962112960437
+    },
+    {
+      "Feature": "person_emp_length",
+      "Mean |SHAP| (log-odds)": 0.09859543426830807
+    },
+    {
+      "Feature": "loan_amnt",
+      "Mean |SHAP| (log-odds)": 0.09678683583853138
+    },
+    {
+      "Feature": "cb_person_cred_hist_length",
+      "Mean |SHAP| (log-odds)": 0.05487591751506662
+    },
+    {
+      "Feature": "cb_person_default_on_file",
+      "Mean |SHAP| (log-odds)": 0.016558572011456024
+    }
+  ],
+  "top_decline_reason_share": {
+    "loan_percent_income": 0.3523809523809524,
+    "loan_grade": 0.23401360544217686,
+    "person_income": 0.22789115646258504,
+    "loan_int_rate": 0.14829931972789115,
+    "loan_intent": 0.03605442176870748,
+    "person_home_ownership": 0.0013605442176870747
+  },
+  "latency_ms": [
+    {
+      "Path": "PD only (predict_pd)",
+      "p50 ms": 11.47956749991863,
+      "p95 ms": 15.518009149957372
+    },
+    {
+      "Path": "PD + decision + reason codes",
+      "p50 ms": 28.476683499889077,
+      "p95 ms": 43.159405999995215
+    },
+    {
+      "Path": "FastAPI /score (in-process)",
+      "p50 ms": 38.31554600003528,
+      "p95 ms": 53.16268904991829
+    },
+    {
+      "Path": "FastAPI /score over HTTP (uvicorn, localhost)",
+      "p50 ms": 36.875681000083205,
+      "p95 ms": 52.92178644997421
+    }
+  ],
+  "system": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cores": 2,
+    "python": "3.13.16",
+    "sklearn": "1.9.1",
+    "lightgbm": "4.7.0",
+    "train_seconds_final_model": 1.786756553000032,
+    "model_artifact_mb": 0.150745,
+    "peak_rss_mb": 470.4453125,
+    "raw_csv_mb": 1.7721,
+    "eval_runtime_seconds": 258.697481529
+  }
+}

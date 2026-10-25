@@ -1,0 +1,6 @@
+Applicant (holdout row),Actual,PD,Decision,Reason 1,Reason 2,Reason 3
+6996,default,0.9997,DECLINE,Loan is a large share of income (loan_percent_income=0.32),Income level (person_income=19200),Lender risk grade (loan_grade=G)
+7986,default,0.9911,DECLINE,Loan is a large share of income (loan_percent_income=0.33),Home ownership status (person_home_ownership=RENT),Income level (person_income=21600)
+8159,default,0.8608,DECLINE,Lender risk grade (loan_grade=D),Interest rate on the loan (loan_int_rate=15.62),Stated loan purpose (loan_intent=MEDICAL)
+27875,repaid,0.2302,DECLINE,Interest rate on the loan (loan_int_rate=15.27),Home ownership status (person_home_ownership=RENT),Lender risk grade (loan_grade=C)
+26854,default,0.0528,APPROVE,Stated loan purpose (loan_intent=DEBTCONSOLIDATION),Home ownership status (person_home_ownership=MORTGAGE),Length of employment (person_emp_length=0.0)

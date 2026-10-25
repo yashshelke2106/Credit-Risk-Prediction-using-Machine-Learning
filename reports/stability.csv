@@ -1,0 +1,7 @@
+Variable,Type,PSI,Status
+Model score (PD),score,0.0006965960477966367,stable
+loan_percent_income,CSI,0.0023557136346544693,stable
+person_home_ownership,CSI,0.00017129247881363414,stable
+person_income,CSI,0.002600144604406475,stable
+loan_intent,CSI,0.0024456932628947655,stable
+loan_int_rate,CSI,0.0019862858814564885,stable
